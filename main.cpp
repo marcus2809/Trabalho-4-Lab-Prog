@@ -1,8 +1,63 @@
 #include <iostream>
-using std::cout;
+#include <new>
 
-template <typename T1, typename T2> 
-class DicioAVL{};
+using std::cout;
+using std::nothrow;
+
+template <typename TC, typename TV> 
+class DicioAVL{
+
+    private:
+
+    struct Noh {TC chave; TV valor; Noh *esq; Noh *dir; };
+
+    Noh *raiz;
+
+    public:
+
+    class Iterator{
+
+        private:
+
+        Noh *p;
+
+        public:
+
+        Iterator (Noh *pnt) : p(pnt) {}
+
+        bool operator == (Iterator j) { return p == j.p; }
+
+        bool operator != (Iterator j) { return p != j.p; }
+
+        void operator ++ () { /*Implemetação*/ }
+
+        TV valor () { return p->valor; }
+
+        TC chave () { return p->chave; }
+    }
+
+    DicioAVL () : prim(nullptr) { }
+
+    Iterator inicio () { Iterator i(raiz); return i; }
+
+    Iterator fim () { Iterator i(nullptr); return i; }
+
+    Iterator inserir (TC c, TV v) { 
+
+        Noh *n = new(nothrow) Noh; if (n == nullptr) return fim();
+
+        /*Implementação*/
+
+        Iterator i(n); return i;
+    }
+
+    Iterator busca (TC c) { /*Implemetação*/ }
+
+    void remover (Iterator i) { /*Implemetação*/ }
+
+    bool vazio () { return (raiz == nullptr); }
+    
+};
 
 int main ()
 {
