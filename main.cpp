@@ -58,11 +58,11 @@ class DicioAVL{
 
     Iterator inicio() {
 
-        Noh *p = raiz;
+        Noh *n = raiz;
         
-        if  (p != nullptr) while (p->esq != nullptr) p = p->esq;
+        if  (n != nullptr) while (n->esq != nullptr) n = n->esq;
 
-        Iterator i(p); return i;
+        Iterator i(n); return i;
     }
 
     Iterator fim() { Iterator i(nullptr); return i; }
@@ -76,7 +76,19 @@ class DicioAVL{
         Iterator i(n); return i;
     }
 
-    Iterator buscar (TC c) { /*Implemetação*/ }
+    Iterator buscar (TC c) {
+
+        Noh *n = raiz;
+
+        while (true) {
+
+            if (n == nullptr || n->chave == c) { Iterator i(n); return i; }
+            
+            if (c < n->chave) n = n->esq;
+
+            if (c > n->chave) n = n->dir;
+        }
+    }
 
     void remover (Iterator i) { /*Implemetação*/ }
 
