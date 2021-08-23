@@ -41,6 +41,7 @@ class DicioAVL{
                 TC temp = p->chave;
 
                 while (p->pai != nullptr ) {
+
                     p = p->pai; if (p->chave > temp) return;
                 }
             }
@@ -53,13 +54,20 @@ class DicioAVL{
         TC chave () { return p->chave; }
     }
 
-    DicioAVL () : raiz(nullptr) { }
+    DicioAVL () : raiz(nullptr) {}
 
-    Iterator inicio () { Iterator i(raiz); return i; }
+    Iterator inicio() {
 
-    Iterator fim () { Iterator i(nullptr); return i; }
+        Noh *p = raiz;
+        
+        if  (p != nullptr) while (p->esq != nullptr) p = p->esq;
 
-    Iterator inserir (TC c, TV v) { 
+        Iterator i(p); return i;
+    }
+
+    Iterator fim() { Iterator i(nullptr); return i; }
+
+    Iterator inserir(TC c, TV v) { 
 
         Noh *n = new(nothrow) Noh; if (n == nullptr) return fim();
 
