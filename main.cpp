@@ -9,13 +9,13 @@ class DicioAVL{
 
     private:
 
-    struct Noh {TC chave; TV valor; Noh *esq; Noh *dir; };
+    struct Noh {TC chave; TV valor; Noh *esq; Noh *dir; Noh *pai };
 
     Noh *raiz;
 
     public:
 
-    class Iterator{
+    class Iterator {
 
         private:
 
@@ -29,7 +29,17 @@ class DicioAVL{
 
         bool operator != (Iterator j) { return p != j.p; }
 
-        void operator ++ () { /*Implemetação*/ }
+        void operator ++ () {
+
+            if (p != nullptr && p->dir != nullptr) {
+
+                p = p->dir; while (p->esq != nullptr) p = p->esq;
+                
+            }
+
+            else if (p != nullptr && p->pai != nullptr) {  }
+
+        }
 
         TV valor () { return p->valor; }
 
