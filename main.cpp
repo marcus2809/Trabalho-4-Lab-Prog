@@ -33,12 +33,19 @@ class DicioAVL{
 
             if (p != nullptr && p->dir != nullptr) {
 
-                p = p->dir; while (p->esq != nullptr) p = p->esq;
-                
+                p = p->dir; while (p->esq != nullptr) p = p->esq; return;
             }
 
-            else if (p != nullptr && p->pai != nullptr) {  }
+            else if (p != nullptr) {
 
+                TC temp = p->chave;
+
+                while (p->pai != nullptr ) {
+                    p = p->pai; if (p->chave > temp) return;
+                }
+            }
+
+            p = nullptr;
         }
 
         TV valor () { return p->valor; }
