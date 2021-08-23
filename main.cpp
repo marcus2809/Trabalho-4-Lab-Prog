@@ -36,7 +36,7 @@ class DicioAVL{
         TC chave () { return p->chave; }
     }
 
-    DicioAVL () : prim(nullptr) { }
+    DicioAVL () : raiz(nullptr) { }
 
     Iterator inicio () { Iterator i(raiz); return i; }
 
@@ -51,7 +51,7 @@ class DicioAVL{
         Iterator i(n); return i;
     }
 
-    Iterator busca (TC c) { /*Implemetação*/ }
+    Iterator buscar (TC c) { /*Implemetação*/ }
 
     void remover (Iterator i) { /*Implemetação*/ }
 
