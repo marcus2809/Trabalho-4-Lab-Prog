@@ -9,7 +9,7 @@ class DicioAVL{
 
     private:
 
-    struct Noh {TC chave; TV valor; Noh *esq; Noh *dir; Noh *pai };
+    struct Noh {TC chave; TV valor; Noh *esq; Noh *dir; Noh *pai; };
 
     Noh *raiz;
 
