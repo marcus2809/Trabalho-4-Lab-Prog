@@ -88,7 +88,7 @@ class DicioAVL{
 
         if (raiz == nullptr) {raiz = n; Iterator i(n); return i; }
 
-        while (temp != nullptr && !inserido) {
+        while (!inserido) {
 
             if (c < temp->chave && temp->esq != nullptr) { temp = temp->esq; }
 
