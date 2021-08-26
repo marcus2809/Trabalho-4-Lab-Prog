@@ -4,6 +4,7 @@
 using std::cout;
 using std::nothrow;
 
+// Dicionário baseado em Árvore AVL
 template <typename TC, typename TV> 
 class DicioAVL{
 
@@ -52,10 +53,12 @@ class DicioAVL{
         TV valor () { return p->valor; }
 
         TC chave () { return p->chave; }
-    }
+    };
 
+    // Construtor do dicionário baseado em Árvore AVL
     DicioAVL () : raiz(nullptr) {}
 
+    // Iterador que aponta o início do dicionário
     Iterator inicio() {
 
         Noh *n = raiz;
@@ -65,17 +68,47 @@ class DicioAVL{
         Iterator i(n); return i;
     }
 
+    // Iterador que aponta o fim do dicionário
     Iterator fim() { Iterator i(nullptr); return i; }
 
+    // Insire um elemento no dicionário
     Iterator inserir(TC c, TV v) { 
 
         Noh *n = new(nothrow) Noh; if (n == nullptr) return fim();
 
-        /*Implementação*/
+        n->chave = c;
+        n->valor = v;
+        n->pai = nullptr;
+        n->esq = nullptr;
+        n->dir = nullptr;
+
+        bool inserido = false;
+
+        Noh *temp = raiz;
+
+        if (raiz == nullptr) {raiz = n; Iterator i(n); return i; }
+
+        while (temp != nullptr && !inserido) {
+
+            if (c < temp->chave && temp->esq != nullptr) { temp = temp->esq; }
+
+            else if (c < temp->chave && temp->esq == nullptr) {
+                
+                n->pai = temp; temp->esq = n; inserido = true;
+            }
+
+            else if (c > temp->chave && temp->dir != nullptr) { temp = temp->dir; }
+
+            else if (c > temp->chave && temp->dir == nullptr) {
+                
+                n->pai = temp; temp->dir = n; inserido = true;
+            }
+        }
 
         Iterator i(n); return i;
     }
 
+    // Busca um elemento no dicionário
     Iterator buscar (TC c) {
 
         Noh *n = raiz;
@@ -90,8 +123,10 @@ class DicioAVL{
         }
     }
 
+    // Remove um elemento do dicionário
     void remover (Iterator i) { /*Implemetação*/ }
 
+    // Indica se o dicionário está vazio
     bool vazio () { return (raiz == nullptr); }
     
 };
@@ -108,4 +143,6 @@ int main ()
     for (i = 48; i < 58; ++i) {
         auto it = D.buscar(i);
     }
+
+    return 0;
 }
