@@ -53,9 +53,9 @@ class DicioAVL
         
         Noh *esq; Noh *dir; Noh *pai;
 
-        Noh* obter_dir () { /* Deve retornar ponteiro para filho direito.  */ }
-        Noh* obter_esq () { /* Deve retornar ponteiro para filho esquerdo. */ }
-        Noh* obter_pai () { /* Deve retornar ponteiro para o pai.          */ }
+        Noh* obter_dir () { /* Deve retornar ponteiro para filho direito.  */ return dir; }
+        Noh* obter_esq () { /* Deve retornar ponteiro para filho esquerdo. */ return esq; }
+        Noh* obter_pai () { /* Deve retornar ponteiro para o pai.          */ return pai; }
 
         }; // Noh  ----------------------------------------------------------------
 
@@ -318,8 +318,7 @@ int main ()
         cout << "O código de ’" << it.valor() << "’ é " << it.chave() << '\n';
     }
     for (i = 53; i < 58; ++i) {
-        auto it = D.buscar(i);
-        D.remover(it);
+        auto it = D.buscar(i); D.remover(it);
         cout << "Foi removido o elemento ’" << it.valor() << "’, cuja chave é " << it.chave() << '\n';
     }
     for (auto it = D.inicio(); it != D.fim(); ++it) {
