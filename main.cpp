@@ -62,7 +62,9 @@ class DicioAVL
     Noh *raiz;
 
     Noh* obter_raiz () { /* Deve retornar um ponteiro para a raiz,
-                            ou nullptr, se a árvore estiver vazia. */ }
+                            ou nullptr, se a árvore estiver vazia. */ 
+        return raiz;                        
+    }
 
     private: // -----------------------------------------------------------------
 
