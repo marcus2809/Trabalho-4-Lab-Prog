@@ -276,9 +276,34 @@ class DicioAVL
         * retornar, deixando o dicionário inalterado. Em caso contrário, então
         * é PRÉ-CONDIÇÃO da função que o iterador estará apontando para algum
         * elemento do dicionário, o qual deverá ser removido. */
-        }
 
-        
+        if ( i == fim() ) { return; }
+
+        Noh *n = i.getNoh();
+
+        if (n->esq == nullptr) { transplantar(n, n->dir); }
+
+        else if (n->dir == nullptr) { transplantar(n, n->esq); }
+
+        else {
+
+            Noh *s; // Noh que será o sucessor de n
+
+            s = n->dir; while (s->esq != nullptr) s = s->esq;
+
+            transplantar(s, s->dir);
+
+            s->esq = n->esq;
+            (n->esq)->pai = s;
+            s->dir = n->dir;
+
+            if ( n->dir != nullptr ) { (n->dir)->pai = s; }
+
+            transplantar(n, s);
+
+            }
+
+        }
 
     }; // DicioAVL  --------------------------------------------------------------
 
@@ -292,8 +317,13 @@ int main ()
     for (auto it = D.inicio(); it != D.fim(); ++it) {
         cout << "O código de ’" << it.valor() << "’ é " << it.chave() << '\n';
     }
-    for (i = 48; i < 58; ++i) {
+    for (i = 53; i < 58; ++i) {
         auto it = D.buscar(i);
+        D.remover(it);
+        cout << "Foi removido o elemento ’" << it.valor() << "’, cuja chave é " << it.chave() << '\n';
+    }
+    for (auto it = D.inicio(); it != D.fim(); ++it) {
+        cout << "O código de ’" << it.valor() << "’ é " << it.chave() << '\n';
     }
 
     return 0;
