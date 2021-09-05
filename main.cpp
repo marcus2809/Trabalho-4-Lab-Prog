@@ -52,6 +52,7 @@ class DicioAVL
         //  a respectiva função deve retornar nullptr):
         
         Noh *esq; Noh *dir; Noh *pai;
+        int bal; // guarda o balanceamento do nó
 
         Noh* obter_dir () { /* Deve retornar ponteiro para filho direito.  */ return dir; }
         Noh* obter_esq () { /* Deve retornar ponteiro para filho esquerdo. */ return esq; }
@@ -80,6 +81,29 @@ class DicioAVL
         else { (u->pai)->dir = v; }
 
         if ( v != nullptr ) { v->pai = u->pai; }
+    }
+
+    bool inserir_rec (Noh *temp, Noh *n) {
+
+        if (n->chave < temp->chave && temp->esq != nullptr) { 
+            if ( inserir_rec(temp->esq, n) ) temp->bal--;
+        }
+
+        else if (n->chave < temp->chave && temp->esq == nullptr) {
+            
+            n->pai = temp; temp->esq = n; temp->bal--;
+            return temp->bal != 0;
+        }
+
+        else if (n->chave > temp->chave && temp->dir != nullptr) { 
+            if ( inserir_rec(temp->dir, n) ) temp->bal++;
+        }
+
+        else if (n->chave > temp->chave && temp->dir == nullptr) {
+            
+            n->pai = temp; temp->dir = n; temp->bal++;
+            return temp->bal != 0;
+        }
     }
 
     public: // ------------------------------------------------------------------
@@ -221,32 +245,15 @@ class DicioAVL
         n->pai = nullptr;
         n->esq = nullptr;
         n->dir = nullptr;
+        n->bal = 0;
 
         if (raiz == nullptr) {raiz = n; Iterador i(n); return i; }
 
-        bool inserido = false;
-
         Noh *temp = raiz;
 
-        while (!inserido) {
-
-            if (c < temp->chave && temp->esq != nullptr) { temp = temp->esq; }
-
-            else if (c < temp->chave && temp->esq == nullptr) {
-                
-                n->pai = temp; temp->esq = n; inserido = true;
-                }
-
-            else if (c > temp->chave && temp->dir != nullptr) { temp = temp->dir; }
-
-            else if (c > temp->chave && temp->dir == nullptr) {
-                
-                n->pai = temp; temp->dir = n; inserido = true;
-                }
-            }
-
+        inserir_rec(temp, n);
+        cout << "balanceamento da raiz " << temp->bal << "\n";
         Iterador i(n); return i;
-
         }
 
     Iterador buscar (TC c)
