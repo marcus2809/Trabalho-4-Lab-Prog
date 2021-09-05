@@ -145,13 +145,9 @@ class DicioAVL
         // Portanto, esses métodos NÃO PRECISAM TESTAR se o iterador aponta
         // para o "fim" do dicionário.
 
-        TC chave () { /* Deve retornar a chave do elemento em questão. */ 
-            return p->chave;
-            }
+        TC chave () { /* Deve retornar a chave do elemento em questão. */ return p->chave; }
 
-        TV valor () { /* Deve retornar o valor do elemento em questão. */ 
-            return p->valor;
-            }
+        TV valor () { /* Deve retornar o valor do elemento em questão. */ return p->valor; }
 
         void operator ++ ()
             {
@@ -269,7 +265,6 @@ class DicioAVL
 
             if (c > n->chave) n = n->dir;
             }
-
         }
 
     void remover (Iterador i)
@@ -319,9 +314,10 @@ int main ()
     for (auto it = D.inicio(); it != D.fim(); ++it) {
         cout << "O código de ’" << it.valor() << "’ é " << it.chave() << '\n';
     }
-    for (i = 53; i < 58; ++i) {
+    for (i = 53; i < 65; ++i) {
         auto it = D.buscar(i); D.remover(it);
-        cout << "Foi removido o elemento ’" << it.valor() << "’, cuja chave é " << it.chave() << '\n';
+        if (it != D.fim() ) 
+            cout << "Foi removido o elemento ’" << it.valor() << "’, cuja chave é " << it.chave() << '\n';
     }
     for (auto it = D.inicio(); it != D.fim(); ++it) {
         cout << "O código de ’" << it.valor() << "’ é " << it.chave() << '\n';
