@@ -88,6 +88,8 @@ class DicioAVL
         Noh *y = x->dir;
         x->dir = y->esq;
 
+        x->bal -= 2; y->bal -= 1;
+
         if (y->esq != nullptr) (y->esq)->pai = x;
         
         y->pai = x->pai;
@@ -107,6 +109,8 @@ class DicioAVL
         Noh *y = x->esq;
         x->esq = y->dir;
 
+        x->bal += 2; y->bal += 1;
+
         if (y->dir != nullptr) (y->dir)->pai = x;
         
         y->pai = x->pai;
@@ -124,7 +128,29 @@ class DicioAVL
     bool inserirRec (Noh *temp, Noh *n) {
 
         if (n->chave < temp->chave && temp->esq != nullptr) { 
-            if ( inserirRec(temp->esq, n) ) {temp->bal--; return true; }
+            if ( inserirRec(temp->esq, n) ) {
+                
+                temp->bal--;
+
+                if (temp->bal == -2) {
+
+                    if ( (temp->esq)->bal == -1) { 
+                        temp->bal = 0; (temp->esq)->bal = 0;
+                        rotacaoDir(temp); return false; 
+                    }
+
+                    if ( (temp->esq)->bal == 1) {
+
+                        //if ( ((temp->esq)->dir)->bal == 0 ) { temp->bal = 0; (temp->esq)->bal = 0; }
+
+                        //if ( ((temp->esq)->dir)->bal == 1 ) { temp->bal = -1; (temp->esq)->bal = 0; }
+
+                        //if ( ((temp->esq)->dir)->bal == -1 ) { temp->bal = 0; (temp->esq)->bal = 1; }
+
+                        rotacaoEsq(temp->esq); rotacaoDir(temp); return false; }
+                }
+                return true; 
+            }
         }
 
         else if (n->chave < temp->chave && temp->esq == nullptr) {
@@ -133,8 +159,30 @@ class DicioAVL
             return temp->bal != 0;
         }
 
-        else if (n->chave > temp->chave && temp->dir != nullptr) { 
-            if ( inserirRec(temp->dir, n) ) {temp->bal++; return true; }
+        else if (n->chave > temp->chave && temp->dir != nullptr) {
+            if ( inserirRec(temp->dir, n) ) {
+                
+                temp->bal++;
+
+                if (temp->bal == 2) {
+
+                    if ( (temp->dir)->bal == 1) { 
+                        temp->bal = 0; (temp->dir)->bal = 0;
+                        rotacaoEsq(temp); return false;
+                    }
+
+                    if ( (temp->dir)->bal == -1) {
+
+                        //if ( ((temp->dir)->esq)->bal == 0 ) { temp->bal = 0; (temp->dir)->bal = 0; }
+
+                        //if ( ((temp->dir)->esq)->bal == 1 ) { temp->bal = 0; (temp->dir)->bal = -1; }
+
+                        //if ( ((temp->dir)->esq)->bal == -1 ) { temp->bal = 1; (temp->dir)->bal = 0; }
+
+                        rotacaoDir(temp->dir); rotacaoEsq(temp); return false; }
+                }
+                return true; 
+            }
         }
 
         else if (n->chave > temp->chave && temp->dir == nullptr) {
@@ -348,6 +396,32 @@ class DicioAVL
 
         }
 
+    // TESTE --------------------------------------------
+
+    // A função mostraArvore faz um desenho esquerda-direita-raiz
+    // da árvore x. O desenho terá uma margem esquerda de
+    // 3b espaços.
+    void mostraArvore(Noh* a, int b) {
+        if (a == nullptr) {
+            imprimeNo('*', b);
+            return;
+        }
+    mostraArvore(a->dir, b+1);
+    imprimeNo(a->chave, b);
+    mostraArvore(a->esq, b+1);
+    }
+
+    // A função auxiliar imprimeNo imprime o caracter
+    // c precedido de 3b espaços e seguido de uma mudança
+    // de linha.
+    void imprimeNo(char c, int b) {
+        int i;
+        for (i = 0; i < b; i++) printf("   ");
+        printf("%c\n", c);
+    }
+
+    // TESTE --------------------------------------------
+
     }; // DicioAVL  --------------------------------------------------------------
 
 
@@ -355,7 +429,9 @@ int main ()
 {
     DicioAVL<int,char> D; int i;
 
-    for (i = 48; i < 58; ++i) if (D.inserir(i, (char) i) == D.fim()) return 1;
+    for (i = 57; i > 48; --i) if (D.inserir(i, (char) i) == D.fim()) return 1;
+
+    D.mostraArvore(D.raiz, 5);
 
     for (auto it = D.inicio(); it != D.fim(); ++it) {
         cout << "O código de ’" << it.valor() << "’ é " << it.chave() << '\n';
@@ -365,6 +441,9 @@ int main ()
         if (it != D.fim() ) 
             cout << "Foi removido o elemento ’" << it.valor() << "’, cuja chave é " << it.chave() << '\n';
     }
+
+    D.mostraArvore(D.raiz, 5);
+    
     for (auto it = D.inicio(); it != D.fim(); ++it) {
         cout << "O código de ’" << it.valor() << "’ é " << it.chave() << '\n';
     }
