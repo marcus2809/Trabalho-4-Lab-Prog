@@ -83,10 +83,48 @@ class DicioAVL
         if ( v != nullptr ) { v->pai = u->pai; }
     }
 
-    bool inserir_rec (Noh *temp, Noh *n) {
+    void rotacaoEsq (Noh *x) {
+        
+        Noh *y = x->dir;
+        x->dir = y->esq;
+
+        if (y->esq != nullptr) (y->esq)->pai = x;
+        
+        y->pai = x->pai;
+        
+        if (x->pai == nullptr) raiz = y;
+        
+        else if (x == (x->pai)->esq) (x->pai)->esq = y;
+        
+        else (x->pai)->dir = y;
+        
+        y->esq = x;
+        x->pai = y;
+    }
+
+    void rotacaoDir (Noh *x) {
+        
+        Noh *y = x->esq;
+        x->esq = y->dir;
+
+        if (y->dir != nullptr) (y->dir)->pai = x;
+        
+        y->pai = x->pai;
+        
+        if (x->pai == nullptr) raiz = y;
+        
+        else if (x == (x->pai)->dir) (x->pai)->dir = y;
+        
+        else (x->pai)->esq = y;
+        
+        y->dir = x;
+        x->pai = y;
+    }
+
+    bool inserirRec (Noh *temp, Noh *n) {
 
         if (n->chave < temp->chave && temp->esq != nullptr) { 
-            if ( inserir_rec(temp->esq, n) ) temp->bal--;
+            if ( inserirRec(temp->esq, n) ) {temp->bal--; return true; }
         }
 
         else if (n->chave < temp->chave && temp->esq == nullptr) {
@@ -96,7 +134,7 @@ class DicioAVL
         }
 
         else if (n->chave > temp->chave && temp->dir != nullptr) { 
-            if ( inserir_rec(temp->dir, n) ) temp->bal++;
+            if ( inserirRec(temp->dir, n) ) {temp->bal++; return true; }
         }
 
         else if (n->chave > temp->chave && temp->dir == nullptr) {
@@ -104,6 +142,7 @@ class DicioAVL
             n->pai = temp; temp->dir = n; temp->bal++;
             return temp->bal != 0;
         }
+        return false;
     }
 
     public: // ------------------------------------------------------------------
@@ -251,8 +290,8 @@ class DicioAVL
 
         Noh *temp = raiz;
 
-        inserir_rec(temp, n);
-        cout << "balanceamento da raiz " << temp->bal << "\n";
+        inserirRec(temp, n);
+        cout << "balanceamento da raiz " << raiz->bal << "\n";
         Iterador i(n); return i;
         }
 
