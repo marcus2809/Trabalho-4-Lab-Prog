@@ -88,7 +88,7 @@ class DicioAVL
         Noh *y = x->dir;
         x->dir = y->esq;
 
-        x->bal -= 2; y->bal -= 1;
+        //x->bal -= 2; y->bal -= 1;
 
         if (y->esq != nullptr) (y->esq)->pai = x;
         
@@ -109,7 +109,7 @@ class DicioAVL
         Noh *y = x->esq;
         x->esq = y->dir;
 
-        x->bal += 2; y->bal += 1;
+        //x->bal += 2; y->bal += 1;
 
         if (y->dir != nullptr) (y->dir)->pai = x;
         
@@ -139,13 +139,13 @@ class DicioAVL
                         rotacaoDir(temp); return false; 
                     }
 
-                    if ( (temp->esq)->bal == 1) {
+                    else if ( (temp->esq)->bal == 1) {
 
-                        //if ( ((temp->esq)->dir)->bal == 0 ) { temp->bal = 0; (temp->esq)->bal = 0; }
+                        if ( ((temp->esq)->dir)->bal == 0 ) { temp->bal = 0; (temp->esq)->bal = 0; }
 
-                        //if ( ((temp->esq)->dir)->bal == 1 ) { temp->bal = -1; (temp->esq)->bal = 0; }
+                        else if ( ((temp->esq)->dir)->bal == 1 ) { temp->bal = -1; (temp->esq)->bal = 0; }
 
-                        //if ( ((temp->esq)->dir)->bal == -1 ) { temp->bal = 0; (temp->esq)->bal = 1; }
+                        else if ( ((temp->esq)->dir)->bal == -1 ) { temp->bal = 0; (temp->esq)->bal = 1; }
 
                         rotacaoEsq(temp->esq); rotacaoDir(temp); return false; }
                 }
@@ -171,13 +171,13 @@ class DicioAVL
                         rotacaoEsq(temp); return false;
                     }
 
-                    if ( (temp->dir)->bal == -1) {
+                    else if ( (temp->dir)->bal == -1) {
 
-                        //if ( ((temp->dir)->esq)->bal == 0 ) { temp->bal = 0; (temp->dir)->bal = 0; }
+                        if ( ((temp->dir)->esq)->bal == 0 ) { temp->bal = 0; (temp->dir)->bal = 0; }
 
-                        //if ( ((temp->dir)->esq)->bal == 1 ) { temp->bal = 0; (temp->dir)->bal = -1; }
+                        else if ( ((temp->dir)->esq)->bal == 1 ) { temp->bal = 0; (temp->dir)->bal = -1; }
 
-                        //if ( ((temp->dir)->esq)->bal == -1 ) { temp->bal = 1; (temp->dir)->bal = 0; }
+                        else if ( ((temp->dir)->esq)->bal == -1 ) { temp->bal = 1; (temp->dir)->bal = 0; }
 
                         rotacaoDir(temp->dir); rotacaoEsq(temp); return false; }
                 }
@@ -371,10 +371,31 @@ class DicioAVL
         if ( i == fim() ) { return; }
 
         Noh *n = i.getNoh();
+        Noh *temp; // nó que receberá o nó mais profundo da árvore que foi alterado o balanceamento
 
-        if (n->esq == nullptr) { transplantar(n, n->dir); }
+        if (n->esq == nullptr) { 
+            
+            temp = n->pai; transplantar(n, n->dir);
 
-        else if (n->dir == nullptr) { transplantar(n, n->esq); }
+            if (n->pai != nullptr) {
+                
+                if ( n == (n->pai)->esq ) { (n->pai)->bal++; }
+
+                else { (n->pai)->bal--; }
+            }
+        }
+
+        else if (n->dir == nullptr) { 
+        
+            temp = n->pai; transplantar(n, n->esq);
+            
+            if (n->pai != nullptr){
+
+                if ( n == (n->pai)->esq ) { (n->pai)->bal++; }
+
+                else { (n->pai)->bal--; }
+            }
+        }
 
         else {
 
@@ -382,17 +403,109 @@ class DicioAVL
 
             s = n->dir; while (s->esq != nullptr) s = s->esq;
 
+            temp = s->pai;
+
+            (s->pai)->bal--;
+
             transplantar(s, s->dir);
 
             s->esq = n->esq;
             (n->esq)->pai = s;
             s->dir = n->dir;
 
+            s->bal = n->bal;
+
             if ( n->dir != nullptr ) { (n->dir)->pai = s; }
 
             transplantar(n, s);
 
+        }
+        //return;
+        while (temp != nullptr) {
+
+            Noh *pai = temp->pai;
+
+            //if (temp->bal == 1 || temp->bal == -1) return; // analisar
+            
+            if (temp->bal == -2) {
+
+                if ( (temp->esq)->bal == -1) {
+                    temp->bal = 0; (temp->esq)->bal = 0;
+
+                    if (temp->pai != nullptr){
+
+                        if ( temp == (temp->pai)->esq ) { (temp->pai)->bal++; }
+
+                        else { (temp->pai)->bal--; }
+                    }
+
+                    rotacaoDir(temp);
+                }
+
+                if ( (temp->esq)->bal == 0) {
+                    temp->bal = -1; (temp->esq)->bal = 1;
+                    rotacaoDir(temp); return;
+                }
+
+                else if ( (temp->esq)->bal == 1) {
+
+                    if (temp->pai != nullptr){
+
+                        if ( temp == (temp->pai)->esq ) { (temp->pai)->bal++; }
+
+                        else { (temp->pai)->bal--; }
+                    }
+
+                    if ( ((temp->esq)->dir)->bal == 0 ) { temp->bal = 0; (temp->esq)->bal = 0; }
+
+                    else if ( ((temp->esq)->dir)->bal == 1 ) { temp->bal = -1; (temp->esq)->bal = 0; }
+
+                    else if ( ((temp->esq)->dir)->bal == -1 ) { temp->bal = 0; (temp->esq)->bal = 1; }
+
+                    rotacaoEsq(temp->esq); rotacaoDir(temp);
+                }
             }
+
+            else if (temp->bal == 2) { // esse caso
+
+                if ( (temp->dir)->bal == 1) { 
+                    temp->bal = 0; (temp->dir)->bal = 0;
+                    
+                    if (temp->pai != nullptr){
+
+                        if ( temp == (temp->pai)->esq ) { (temp->pai)->bal++; }
+
+                        else { (temp->pai)->bal--; }
+                    }
+                    
+                    rotacaoEsq(temp);
+                }
+
+                else if ((temp->dir)->bal == 0) {
+                    temp->bal = 1; (temp->dir)->bal = -1;
+                    rotacaoEsq(temp); return;
+                }
+
+                else if ( (temp->dir)->bal == -1) {
+
+                    if (temp->pai != nullptr){
+
+                        if ( temp == (temp->pai)->esq ) { (temp->pai)->bal++; }
+
+                        else { (temp->pai)->bal--; }
+                    }
+
+                    if ( ((temp->dir)->esq)->bal == 0 ) { temp->bal = 0; (temp->dir)->bal = 0; }
+
+                    else if ( ((temp->dir)->esq)->bal == 1 ) { temp->bal = 0; (temp->dir)->bal = -1; }
+
+                    else if ( ((temp->dir)->esq)->bal == -1 ) { temp->bal = 1; (temp->dir)->bal = 0; }
+
+                    rotacaoDir(temp->dir); rotacaoEsq(temp);
+                }
+            }
+            temp = pai;
+        }
 
         }
 
@@ -403,7 +516,7 @@ class DicioAVL
     // 3b espaços.
     void mostraArvore(Noh* a, int b) {
         if (a == nullptr) {
-            imprimeNo('*', b);
+            imprimeEsp('*', b);
             return;
         }
     mostraArvore(a->dir, b+1);
@@ -414,10 +527,24 @@ class DicioAVL
     // A função auxiliar imprimeNo imprime o caracter
     // c precedido de 3b espaços e seguido de uma mudança
     // de linha.
-    void imprimeNo(char c, int b) {
+    void imprimeNo(int c, int b) {
+        int i;
+        for (i = 0; i < b; i++) printf("   ");
+        printf("%d\n", c);
+    }
+    void imprimeEsp(char c, int b) {
         int i;
         for (i = 0; i < b; i++) printf("   ");
         printf("%c\n", c);
+    }
+
+    void EmOrdem(Noh* x) {
+        
+        if (x != nullptr) {
+            EmOrdem(x->dir);
+            cout << x->bal << '\n';
+            EmOrdem(x->esq);
+        }
     }
 
     // TESTE --------------------------------------------
@@ -433,20 +560,21 @@ int main ()
 
     D.mostraArvore(D.raiz, 5);
 
-    for (auto it = D.inicio(); it != D.fim(); ++it) {
-        cout << "O código de ’" << it.valor() << "’ é " << it.chave() << '\n';
-    }
-    for (i = 53; i < 65; ++i) {
+    //for (auto it = D.inicio(); it != D.fim(); ++it) {
+    //    cout << "O código de ’" << it.valor() << "’ é " << it.chave() << '\n';
+    //}
+    for (i = 55; i < 65; ++i) {
         auto it = D.buscar(i); D.remover(it);
-        if (it != D.fim() ) 
-            cout << "Foi removido o elemento ’" << it.valor() << "’, cuja chave é " << it.chave() << '\n';
+    //    if (it != D.fim() ) 
+    //        cout << "Foi removido o elemento ’" << it.valor() << "’, cuja chave é " << it.chave() << '\n';
     }
-
+    cout << "\n------------------------------------------------\n\n";
     D.mostraArvore(D.raiz, 5);
-    
-    for (auto it = D.inicio(); it != D.fim(); ++it) {
-        cout << "O código de ’" << it.valor() << "’ é " << it.chave() << '\n';
-    }
+    D.EmOrdem(D.raiz);
+
+    //for (auto it = D.inicio(); it != D.fim(); ++it) {
+    //    cout << "O código de ’" << it.valor() << "’ é " << it.chave() << '\n';
+    //}
 
     return 0;
 }
