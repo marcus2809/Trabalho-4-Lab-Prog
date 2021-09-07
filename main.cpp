@@ -193,6 +193,15 @@ class DicioAVL
         return false;
     }
 
+    // Função utilizado pelo destruidor do Dicionário para desalocar a memória da árvore AVL
+    void desalocar(Noh *n) {
+        if (n != nullptr) {
+            desalocar(n->esq);
+            desalocar(n->dir);
+            delete n;
+        }
+    }
+
     public: // ------------------------------------------------------------------
 
     // Tudo o que está abaixo deve ser mantido público em DicioAVL,
@@ -203,7 +212,9 @@ class DicioAVL
     DicioAVL () : raiz(nullptr) { /* Deve criar um dicionário vazio. */ }
 
     ~DicioAVL () { /* Deve desalocar toda a memória dinamicamente alocada
-                    * pelo dicionário (no caso, basicamente a árvore AVL). */ }
+                    * pelo dicionário (no caso, basicamente a árvore AVL). */ 
+        desalocar(raiz);
+        }
 
     class Iterador
         {
@@ -339,7 +350,7 @@ class DicioAVL
         Noh *temp = raiz;
 
         inserirRec(temp, n);
-        cout << "balanceamento da raiz " << raiz->bal << "\n";
+
         Iterador i(n); return i;
         }
 
@@ -420,7 +431,7 @@ class DicioAVL
             transplantar(n, s);
 
         }
-        //return;
+        return;
         while (temp != nullptr) {
 
             Noh *pai = temp->pai;
@@ -563,7 +574,7 @@ int main ()
     //for (auto it = D.inicio(); it != D.fim(); ++it) {
     //    cout << "O código de ’" << it.valor() << "’ é " << it.chave() << '\n';
     //}
-    for (i = 55; i < 65; ++i) {
+    for (i = 54; i < 55; ++i) {
         auto it = D.buscar(i); D.remover(it);
     //    if (it != D.fim() ) 
     //        cout << "Foi removido o elemento ’" << it.valor() << "’, cuja chave é " << it.chave() << '\n';
