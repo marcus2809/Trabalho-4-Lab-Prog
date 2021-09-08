@@ -72,6 +72,7 @@ class DicioAVL
     // Você pode incluir campos e métodos que importem para a implementação
     // mas que fiquem inacessíveis ao usuário da classe DicioAVL ("private").
 
+    // Troca o nó "u" pelo "v" na árvore.
     void transplantar (Noh *u, Noh *v) {
     
         if ( u->pai == nullptr ) { raiz = v; }
@@ -83,12 +84,11 @@ class DicioAVL
         if ( v != nullptr ) { v->pai = u->pai; }
     }
 
+    // Rotação à esquerda em x.
     void rotacaoEsq (Noh *x) {
         
         Noh *y = x->dir;
         x->dir = y->esq;
-
-        //x->bal -= 2; y->bal -= 1;
 
         if (y->esq != nullptr) (y->esq)->pai = x;
         
@@ -104,12 +104,12 @@ class DicioAVL
         x->pai = y;
     }
 
+
+    // Rotação à direita em x.
     void rotacaoDir (Noh *x) {
         
         Noh *y = x->esq;
         x->esq = y->dir;
-
-        //x->bal += 2; y->bal += 1;
 
         if (y->dir != nullptr) (y->dir)->pai = x;
         
@@ -125,6 +125,7 @@ class DicioAVL
         x->pai = y;
     }
 
+    // Função recursiva para inserir um nó na árvore e ajustar os balanceamentos.
     bool inserirRec (Noh *temp, Noh *n) {
 
         if (n->chave < temp->chave && temp->esq != nullptr) { 
@@ -146,6 +147,8 @@ class DicioAVL
                         else if ( ((temp->esq)->dir)->bal == 1 ) { temp->bal = -1; (temp->esq)->bal = 0; }
 
                         else if ( ((temp->esq)->dir)->bal == -1 ) { temp->bal = 0; (temp->esq)->bal = 1; }
+
+                        ((temp->dir)->esq)->bal = 0; 
 
                         rotacaoEsq(temp->esq); rotacaoDir(temp); return false; }
                 }
@@ -179,6 +182,8 @@ class DicioAVL
 
                         else if ( ((temp->dir)->esq)->bal == -1 ) { temp->bal = 1; (temp->dir)->bal = 0; }
 
+                        ((temp->dir)->esq)->bal = 0; 
+
                         rotacaoDir(temp->dir); rotacaoEsq(temp); return false; }
                 }
                 return true; 
@@ -193,7 +198,7 @@ class DicioAVL
         return false;
     }
 
-    // Função utilizado pelo destruidor do Dicionário para desalocar a memória da árvore AVL
+    // Função utilizado pelo destrutor do Dicionário para desalocar a memória da árvore AVL.
     void desalocar(Noh *n) {
         if (n != nullptr) {
             desalocar(n->esq);
@@ -202,13 +207,15 @@ class DicioAVL
         }
     }
 
+    // Função para ajustar os balanceamentos dos nós após a remoção.
+    // Indica que o último nó checado foi seu filho direito.
     void consertarDir(Noh *temp) {
         
         if (temp == nullptr) return;
 
         Noh *pai = temp->pai;
 
-        bool esquerda = false; // indica qual sub arvore foi alterada
+        bool esquerda = false; // indica qual sub árvore foi alterada
         
         if ( pai != nullptr && temp == pai->esq ) esquerda = true;
 
@@ -236,6 +243,8 @@ class DicioAVL
 
                 else if ( ((temp->esq)->dir)->bal == -1 ) { temp->bal = 0; (temp->esq)->bal = 1; }
 
+                ((temp->dir)->esq)->bal = 0;
+
                 rotacaoEsq(temp->esq); rotacaoDir(temp);
             }
         }
@@ -244,13 +253,15 @@ class DicioAVL
         else consertarDir(pai);
     }
 
+    // Função para ajustar os balanceamentos dos nós após a remoção.
+    // Indica que o último nó checado foi seu filho esquerdo.
     void consertarEsq(Noh *temp) {
 
         if (temp == nullptr) return;
 
         Noh *pai = temp->pai;
 
-        bool esquerda = false; // indica qual sub arvore foi alterada
+        bool esquerda = false; // indica qual sub árvore foi alterada
         
         if ( pai != nullptr && temp == pai->esq ) esquerda = true;
 
@@ -277,6 +288,8 @@ class DicioAVL
                 else if ( ((temp->dir)->esq)->bal == 1 ) { temp->bal = 0; (temp->dir)->bal = -1; }
 
                 else if ( ((temp->dir)->esq)->bal == -1 ) { temp->bal = 1; (temp->dir)->bal = 0; }
+
+                ((temp->dir)->esq)->bal = 0; 
 
                 rotacaoDir(temp->dir); rotacaoEsq(temp);
             }
@@ -450,9 +463,9 @@ class DicioAVL
 
             if (n == nullptr || n->chave == c) { Iterador i(n); return i; }
             
-            if (c < n->chave) n = n->esq;
+            else if (c < n->chave) n = n->esq;
 
-            if (c > n->chave) n = n->dir;
+            else if (c > n->chave) n = n->dir;
             }
         }
 
@@ -466,36 +479,36 @@ class DicioAVL
         if ( i == fim() ) { return; }
 
         Noh *n = i.getNoh();
+        bool esquerda = false; // indica qual sub árvore foi alterada
 
-        if (n->esq == nullptr) { 
+        if (n->esq == nullptr) {
+
+            Noh *pai = n->pai;
+
+            if (pai != nullptr && n == pai->esq ) esquerda = true;
 
             transplantar(n, n->dir);
 
-            if (n->pai != nullptr) {
-                
-                if ( n->dir == (n->pai)->esq ) consertarEsq(n->pai); // altura da subarvore esquerda diminuiu
-                
-                else consertarDir(n->pai);
-            }
+            if (esquerda) consertarEsq(pai);
+            else consertarDir(pai);
         }
 
         else if (n->dir == nullptr) {
 
+            Noh *pai = n->pai;
+
+            if (pai != nullptr && n == pai->esq ) esquerda = true;
+
             transplantar(n, n->esq);
 
-            if (n->pai != nullptr){
-
-                if ( n->esq == (n->pai)->esq ) consertarEsq(n->pai); // altura da subarvore esquerda diminuiu
-                
-                else consertarDir(n->pai);
-            }
+            if (esquerda) consertarEsq(pai);
+            else consertarDir(pai);
         }
 
         else {
 
             Noh *s; // Noh que será o sucessor de n
             Noh *temp; // nó que receberá o nó mais profundo da árvore que foi alterado o balanceamento
-            bool esquerda = false; // indica qual sub arvore foi alterada
 
             s = n->dir; while (s->esq != nullptr) s = s->esq;
 
@@ -507,8 +520,6 @@ class DicioAVL
             s->esq = n->esq;
             (n->esq)->pai = s;
             s->dir = n->dir;
-
-            s->bal = n->bal;
 
             if ( n->dir != nullptr ) { (n->dir)->pai = s; }
 
@@ -562,23 +573,41 @@ class DicioAVL
 
 }; // DicioAVL  --------------------------------------------------------------
 
+/*
+int main ()
+    {
+    DicioAVL<int,char> D; int i;
+    
+    for (i = 48; i < 58; ++i) if (D.inserir(i, (char) i) == D.fim()) return 1;
+    
+    for (auto it = D.inicio(); it != D.fim(); ++it)
+        {
+        cout << "O código de ’" << it.valor() << "’ é " << it.chave() << '\n';
+        }
+
+    for (i = 48; i < 58; ++i)
+        {
+        auto it = D.buscar(i);
+        }
+    }
+*/
 
 int main ()
 {
     DicioAVL<int,char> D; int i;
 
-    for (i = 58; i >= 48; --i) if (D.inserir(i, (char) i) == D.fim()) return 1;
+    for (i = 48; i < 58; ++i) if (D.inserir(i, (char) i) == D.fim()) return 1;
 
     D.mostraArvore(D.raiz, 5);
     D.EmOrdem(D.raiz);
 
-    //for (auto it = D.inicio(); it != D.fim(); ++it) {
-    //    cout << "O código de ’" << it.valor() << "’ é " << it.chave() << '\n';
-    //}
-    for (i = 47; i < 55; ++i) {
+    for (auto it = D.inicio(); it != D.fim(); ++it) {
+       cout << "O código de ’" << it.valor() << "’ é " << it.chave() << '\n';
+    }
+    for (i = 52; i < 55; i += i) {
         auto it = D.buscar(i); D.remover(it);
-    //    if (it != D.fim() ) 
-    //        cout << "Foi removido o elemento ’" << it.valor() << "’, cuja chave é " << it.chave() << '\n';
+        if (it != D.fim() ) 
+            cout << "Foi removido o elemento ’" << it.valor() << "’, cuja chave é " << it.chave() << '\n';
     }
     cout << "\n------------------------------------------------\n\n";
     D.mostraArvore(D.raiz, 5);
